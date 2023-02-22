@@ -15,4 +15,4 @@ print("Extracted numbers from the list : " + num)
 """
 
 num = re.findall(r'\d', tekst) 
-print(tekst.index(num))
+print(num)
