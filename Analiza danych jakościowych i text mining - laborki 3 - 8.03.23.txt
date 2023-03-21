@@ -2,7 +2,6 @@
 
 Oczyść teksty tweetów na temat kawy z: znaków przełamania linii, linków, nazw użytkowników, hasztagów, znaku &, „RT”, a także liczb (cyfr) i znaków przestankowych.
 
-```{r}
 tekst <- c("@ayyytylerb that is so true drink lots of coffee",
 "RT @bryzy_brib: Senior March tmw morning at 7:25 A.M. in the SENIOR lot. Get up early, make yo coffee/breakfast, cus this will only happen ?",
 "If you believe in #gunsense tomorrow would be a very good day to have your coffee any place BUT @Starbucks Guns+Coffee=#nosense @MomsDemand",
@@ -24,7 +23,6 @@ tekst <- c("@ayyytylerb that is so true drink lots of coffee",
 "RT @LittleMelss: lmfao!!!@bryanlaca: nahhh Melanie u is fa sho like an ummm a Coffee table ;) ) yeeeee lmaoo",
 "I wonder if Christian Colon will get a cup of coffee once the rosters expand to 40 man in September. Really nothing to lose by doing so.")
 ```
-
 library(tidyverse)
 
 # usunięcie znaków przełamania linii
