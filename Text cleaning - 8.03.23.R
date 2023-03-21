@@ -1,0 +1,47 @@
+#### Zadanie 1.
+
+#Oczyść teksty tweetow na temat kawy z: znaków przełamania linii, linków, nazw użytkowników, hasztagów, znaku &, „RT”, a także liczb (cyfr) i znaków przestankowych.
+
+tekst <- c("@ayyytylerb that is so true drink lots of coffee",
+           "RT @bryzy_brib: Senior March tmw morning at 7:25 A.M. in the SENIOR lot. Get up early, make yo coffee/breakfast, cus this will only happen ?",
+           "If you believe in #gunsense tomorrow would be a very good day to have your coffee any place BUT @Starbucks Guns+Coffee=#nosense @MomsDemand",
+           "My cute coffee mug. http://t.co/2udvMU6XIG",
+           "RT @slaredo21: I wish we had Starbucks here... Cause coffee dates in the morning sound perff!",
+           "Does anyone ever get a cup of coffee before a cocktail??",
+           "I like my coffee like I like my women...black, bitter, and preferably fair trade. I love #Archer",
+           "@dreamwwediva ya didn't have coffee did ya?",
+           "RT @iDougherty42: I just want some coffee.",
+           "RT @Dorkv76: I can't care before coffee.",
+           "No lie I wouldn't mind coming home smelling like coffee",
+           "RT @JonasWorldFeed: Play Ping Pong with Joe. Take a tour of the stage with Nick. Have coffee with Kevin. Charity auction: https://t.co/VTkK?",
+           "Have I ever told any of you that Tate Donovan bought my stepmom coffee?",
+           "RT @JonasWorldFeed: Play Ping Pong with Joe. Take a tour of the stage with Nick. Have coffee with Kevin. Charity auction: https://t.co/VTkK?",
+           "@HeatherWhaley I was about 2 joke it takes 2 hands to hold hot coffee...then I read headline! #Don'tDrinkNShoot",
+           "RT @MoveTheSticks: Charlie Whitehurst looks like he should be working at a coffee shop in Portland or hosting a renovation show on HGTV.",
+           "Coffee always makes everything better.",
+           "RT @AdelaideReview: Food For Thought: @Annabelleats shares a delicious Venison and Porcini Mushroom Pie Recipe. http://t.co/N8O7vqFKWN http?",
+           "RT @LittleMelss: lmfao!!!@bryanlaca: nahhh Melanie u is fa sho like an ummm a Coffee table ;) ) yeeeee lmaoo",
+           "I wonder if Christian Colon will get a cup of coffee once the rosters expand to 40 man in September. Really nothing to lose by doing so.")
+
+library(tidyverse)
+
+# usunięcie znaków przełamania linii
+tekst <- str_replace_all(tekst, "\n", "")
+
+# usuwanięcie linków
+tekst <- str_replace_all(tekst, "http\\S+", "")
+
+# usunięcie nazw użytkowników oraz hasztagi
+tekst <- str_replace_all(tekst, "@\\S+", "")
+tekst <- str_replace_all(tekst, "#\\S+", "")
+
+# usunięcie znaków i retweetów
+tekst <- str_replace_all(tekst, "&", "")
+tekst <- str_replace_all(tekst, "RT", "")
+
+# usunięcie liczb i znakóW przestankowych
+tekst <- str_replace_all(tekst, "[^[:alpha:][:space:]]", "")
+tekst <- str_replace_all(tekst, "\\b\\d+\\b", "")
+
+# wynik końcowy
+tekst
