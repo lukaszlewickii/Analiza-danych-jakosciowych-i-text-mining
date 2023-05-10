@@ -1,0 +1,253 @@
+---
+title: "Sentiment Analysis - analiza nastrojów"
+author: "Bogna Zacny"
+date: "lato 2022/2023"
+output:
+  html_document: 
+    highlight: tango
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
+library("sentimentr")
+library("RSentiment")
+library("syuzhet")
+library("dplyr")
+library("ggplot2")
+library("readr")
+library("tidyr")
+```
+
+## Przygotowanie środowiska
+
+Przydatne pakiety
+
+```
+install.packages(c("sentimentr", "RSentiment", "syuzhet",
+"dplyr", "ggplot2", "tidyr", "readr"))
+
+library("sentimentr")
+library("RSentiment")
+library("syuzhet")
+
+library("dplyr")
+library("ggplot2")
+library("tidyr")
+library("readr")
+```
+
+Przestrzeń robocza
+
+```
+setwd("C:/Users/UE/Documents/R")
+```
+
+## Dane
+
+```{r}
+tekst <- c("Bought it as a random gift for my daughter and she loves it!!!!!",
+           "Bought it as a random GIFT for my daughter and she loves it!!!!!",
+           "I bought this for my daughter and family. Everybody loves Alexa!",
+           "I bought this for my Daughter and family. Everybody loooves Alexa!",
+           "Pretty disappointing. It's pretty worthless.",
+           "Disappointing and frustrating ? I'm returning Echo")
+```
+
+## Sentiment Analysis - podejście słownikowe 
+
+Funkcje bibliotek `sentimentr`, `RSentiment`, `syuzhet` nie wymagają przygotowywania macierzy term-dokument. Nie jest również wymagane zaawansowane czyszczenie tekstu, gdyż analiza nastrojów sprowadza się do odnalezienie w tekście pewnych *"kluczowych"* słów.
+
+### Sentiment Analysis z biblioteką `sentimentr`
+
+```{r}
+get_sentences(tekst)
+```
+
+```{r}
+extract_sentiment_terms(tekst)
+extract_sentiment_terms(tekst)$positive
+```
+
+```{r}
+extract_sentiment_terms(tekst) %>% unnest(negative)
+```
+
+```{r}
+extract_sentiment_terms(tekst) %>% unnest(positive)
+```
+
+#### Analiza nastroju każdego zdania w dokumencie
+
+```{r}
+wynik <- sentiment(tekst, polarity_dt = lexicon::hash_sentiment_huliu)
+```
+
+```{r}
+plot(wynik)
+## plot(wynik$sentiment/sum(abs(wynik$sentiment))*100, type = "l")
+```
+
+#### Analiza nastroju całego dokumentu
+
+```{r}
+wynik_by <- sentiment_by(tekst, polarity_dt = lexicon::hash_sentiment_huliu)
+```
+
+```{r}
+plot(wynik_by)
+```
+
+#### Wizualizacja oceny nastroju wszystkich dokumentów
+
+```{r}
+ggplot(wynik_by, aes(element_id, ave_sentiment)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Analiza nastrojów opinii", x = "Opinie", y = "Ocena sentymentu") +
+  theme_classic()
+```
+
+Aby wyraźniej uwypuklić różnice nastrojów poszczególnych opinii można dokonać ich kategoryzacji na opinie neutralne, pozytywne i negatywne.
+
+```{r}
+wynik_by %>%
+  mutate(kolor = ifelse(ave_sentiment == 0,
+                        "Neutralna",
+                        ifelse(ave_sentiment < 0, "Negatywna", "Pozytywna"))) %>%
+  ggplot(aes(element_id, ave_sentiment, fill = kolor, color = kolor)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Analiza nastrojów opinii", x = "Opinie", y = "Ocena sentymentu") +
+  theme_classic()
+```
+
+Wprowadzenie własnych kolorów
+
+```{r}
+moje_kolory <- c("deeppink", "gold", "green3")
+
+wynik_by %>%
+  mutate(kolor = ifelse(ave_sentiment == 0,
+                        "Neutralna",
+                        ifelse(ave_sentiment < 0, "Negatywna", "Pozytywna"))) %>%
+  ggplot(aes(element_id, ave_sentiment, fill = kolor, color = kolor)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = moje_kolory) +
+  scale_color_manual(values = moje_kolory) +
+  labs(title = "Analiza nastrojów opinii", x = "Opinie", y = "Ocena sentymentu") +
+  theme_classic()
+
+```
+
+#### Modyfikacja słów "kluczowych"
+
+Podstawą analizy nastrojów w bibliotece `sentimentr` są dwa typy zbiorów słów. Zbiory pobierane są z biblioteki `lexicon`:
+
+* zbiór słów wyrażających nastrój (zależny od wybranego słownika) - `hash_sentiment_XXX`,
+* zbiór słów modyfikujących wartość nastroju - `hash_valence_shifters`.
+
+```{r}
+library("lexicon")
+head(hash_sentiment_huliu)
+hash_sentiment_huliu[hash_sentiment_huliu$x == "pretty",]
+
+# Inne słowniki do wyboru
+# hash_sentiment_jockers
+# hash_sentiment_nrc
+# hash_sentiment_sentiword
+```
+
+```{r}
+head(hash_valence_shifters) 
+hash_valence_shifters[hash_valence_shifters$x == "pretty"] 
+```
+
+Wprowadzenie słowa "pretty" jako słowa łagodzące
+
+```{r}
+nowe_slowo <- data.frame(x = "pretty", y = 3)
+hash_sentiment_huliu_moja <- update_key(hash_sentiment_huliu, drop = "pretty")
+hash_valence_shifters_moja <- update_key(hash_valence_shifters,
+                                          x = nowe_slowo)
+```
+
+Ponowne wyliczenie oceny nastroju z uwzględnieniem zmian dokonanych w zbiorach danych.
+
+```{r}
+wynik_by_pretty <- sentiment_by(tekst,
+                           polarity_dt = hash_sentiment_huliu_moja,
+                           valence_shifters_dt = hash_valence_shifters_moja,
+                           n.before = 5)
+```
+
+```{r}
+
+wynik_by_pretty %>%
+  mutate(kolor = ifelse(ave_sentiment == 0, "Neutralna", ifelse(ave_sentiment < 0, "Negatywna", "Pozytywna"))) %>%
+  ggplot(aes(element_id, ave_sentiment, fill = kolor, color = kolor)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = moje_kolory) +
+  scale_color_manual(values = moje_kolory) +
+  labs(x = "Opinie", y = "Ocena sentymentu") +
+  theme_minimal()
+```
+
+#### Analiza nastroju dokumentów dla grup dokumentów
+
+Zbiór danych zawierający teksty debat prezydenckich w Stanach Zjednoczonych z 2012 roku `?presidential_debates_2012`.
+
+```{r}
+data(presidential_debates_2012)
+head(presidential_debates_2012)
+```
+
+```{r}
+presidential_debates_2012$dialogue[1:4]
+```
+
+Analiza:
+
+```{r}
+# wynik_pres <- sentiment_by(presidential_debates_2012$dialogue,
+#                     by = c(presidential_debates_2012$person, presidential_debates_2012$person))
+wynik_pres <- with(presidential_debates_2012, sentiment_by(dialogue, person))
+```
+
+Wizualizacja:
+
+```{r}
+plot(wynik_pres)
+```
+
+### Sentiment Analysis z biblioteką `RSentiment`
+
+```{r}
+wynik <- calculate_score(tekst)
+```
+
+```{r}
+wynik <- calculate_total_presence_sentiment(tekst)
+```
+
+### Sentiment Analysis z biblioteką `syuzhet`
+
+```{r}
+get_sentiment(tekst, method="syuzhet")
+```
+
+```{r}
+wynik <- tibble(Tekst = tekst, 
+           syuzhet = get_sentiment(Tekst, method="syuzhet"),
+           bing = get_sentiment(Tekst, method="bing"),
+           afinn = get_sentiment(Tekst, method="afinn"),
+           nrc = get_sentiment(Tekst, method="nrc"))
+```
+
+```{r}
+get_nrc_sentiment(tekst) %>% 
+```
+
+## Zadanie
+
+Porównaj "nastrój" tweetów zebranych podczas realizacji zadania z chmurami. Korpus ma odzwierciedlać pewną dychotomię - konflikt, dyskusję dwóch stron pewnego zjawiska np: zmian klimatycznych, lockdownu, ulubionego sportu (rugby vs. piłka nożna).
+
+Analizę wykonaj tak aby można było porównać nastrój dwóch grup dokumentów odpowiadających przeciwstawnym stronom.
