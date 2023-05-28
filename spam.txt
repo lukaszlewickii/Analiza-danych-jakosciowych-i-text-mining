@@ -1,0 +1,9 @@
+hello,busines,regard,replica,Spam
+1,0,1,1,spam
+1,0,1,0,nonspam
+1,0,1,0,nonspam
+0,1,1,0,spam
+0,1,1,0,nonspam
+0,1,1,1,spam
+1,1,0,1,spam
+1,0,0,1,nonspam
