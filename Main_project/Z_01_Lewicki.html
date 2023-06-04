@@ -16552,16 +16552,16 @@ Władca Pierścieni. Powrót Króla. Tom 3: 0.13237179487179487
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Inicjalizacja analizatora sentymentu</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Inicjalizacja analizatora sentymentu</span>
 <span class="n">sia</span> <span class="o">=</span> <span class="n">SentimentIntensityAnalyzer</span><span class="p">()</span>
 
-<span class="c1"># Analiza sentymentu dla przykładowych tekstów</span>
+<span class="c1">#Analiza sentymentu dla przykładowych tekstów</span>
 <span class="n">book1_vader_sentiment</span> <span class="o">=</span> <span class="n">sia</span><span class="o">.</span><span class="n">polarity_scores</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">book1_cleaned</span><span class="p">))</span>
 <span class="n">book2_vader_sentiment</span> <span class="o">=</span> <span class="n">sia</span><span class="o">.</span><span class="n">polarity_scores</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">book2_cleaned</span><span class="p">))</span>
 <span class="n">book3_vader_sentiment</span> <span class="o">=</span> <span class="n">sia</span><span class="o">.</span><span class="n">polarity_scores</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">book3_cleaned</span><span class="p">))</span>
 <span class="n">book4_vader_sentiment</span> <span class="o">=</span> <span class="n">sia</span><span class="o">.</span><span class="n">polarity_scores</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">book4_cleaned</span><span class="p">))</span>
 
-<span class="c1"># Wyświetlenie wyników</span>
+<span class="c1">#Wyświetlenie wyników</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Wskaźniki polaryzacji nastroju z wykorzystaniem vaderSentiment:&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Book 1 Sentiment:&quot;</span><span class="p">,</span> <span class="n">book1_vader_sentiment</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Book 2 Sentiment:&quot;</span><span class="p">,</span> <span class="n">book2_vader_sentiment</span><span class="p">)</span>
